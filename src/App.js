@@ -1,60 +1,123 @@
 import * as React from 'react';
 
-
-const lists =[
-  {
-    title: 'react',
-    url:'url/abc/db',
-    author: 'Ahmad alizada',
-    num_comments: 4,
-    points:4,
-    objectID:1
-  },
-  {
-    title: 'redux',
-    url:'url/abc/db',
-    author: 'Ahmad alizada2',
-    num_comments: 3,
-    points:2,
-    objectID:2
-  },
-  {
-    title: 'vuex',
-    url:'url/abc/db',
-    author: 'Ahmad alizada3',
-    num_comments: 3,
-    points:2,
-    objectID:2
-  }
-] 
-function App(){
+function List(probs){
   return (
     <div>
-      <h1>My Hacker Stories</h1>
-
-      <label htmlFor='search'>Search </label>
-      <input type="text" id="search"></input>
-      <hr/>
-
+      <h3>{probs.title}</h3>
       <ul>
-        { lists.map(function (item){
-          return (
-                     <li key={item.objectID}>
-                        <span>
-                          <a href={item.url} >{item.title}</a>
-                        </span>
-                        <span>{item.author}</span>
-                        <span>{item.num_comments}</span>
-                        <span>{item.points}</span>
-                     </li>
-                     
-                );
+        { probs.lists.map(function (item){
+          return (<Item item={item} />);
           }) 
-         }
+        }
       </ul>
       {/**/}
     </div>
   );
 }
+
+const Item = (probs) =>{
+  const item = probs.item;
+  return (
+    <li key={item.objectID}>
+      <span>
+        <a href={item.url} >{item.title}</a> &nbsp;&nbsp;
+      </span>     <span>{item.author}</span>&nbsp;&nbsp;
+      <span>{item.num_comments}</span>&nbsp;&nbsp;
+      <span>{item.points}</span>
+  </li>
+  );
+}
+
+
+function Search(){
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  const handleChange = (event)=> {
+      // console.log('Before: ${searchTerm}');
+      setSearchTerm(event.target.value);
+      // console.log('After:${searchTerm}');
+  }
+
+  const handleMouseOver = (event) => {
+      console.log(event);
+  }
+  return (
+      <div>
+        <h1>My Hacker Stories</h1>
+        <label htmlFor='search'>Search </label>
+        <input type="text" id="search" onChange={handleChange} onMouseOver={handleMouseOver}></input>
+        <p>
+          search for <strong>{searchTerm}</strong>
+        </p>
+      </div>
+      );
+  }
+
+function App(){
+
+  const stories =[
+    {
+      title: 'react',
+      url:'url/abc/db',
+      author: 'Ahmad alizada',
+      num_comments: 4,
+      points:4,
+      objectID:1
+    },
+    {
+      title: 'redux',
+      url:'url/abc/db',
+      author: 'Ahmad Nadem',
+      num_comments: 3,
+      points:2,
+      objectID:7
+    },
+    {
+      title: 'vuex',
+      url:'url/abc/db',
+      author: 'Nawroz Salehi',
+      num_comments: 3,
+      points:2,
+      objectID:2
+    }
+  ] 
+
+  const jsLibs =[
+    {
+      title: 'jQuery',
+      url:'url/abc/db',
+      author: 'Fayaz Nabi',
+      num_comments: 4,
+      points:4,
+      objectID:1
+    },
+    {
+      title: 'vuejs',
+      url:'url/abc/db',
+      author: 'Rohan Nido',
+      num_comments: 3,
+      points:2,
+      objectID:7
+    },
+    {
+      title: 'Angular',
+      url:'url/abc/db',
+      author: 'Google',
+      num_comments: 3,
+      points:2,
+      objectID:2
+    }
+  ] 
+  
+    return (
+      <div>
+        <Search/>
+        <hr/>
+        <List lists={stories} title="React eco system"/>
+        <List lists={jsLibs} title="JavaScript Libraries"/>
+      </div>
+    );
+}
+
 
 export default App;
