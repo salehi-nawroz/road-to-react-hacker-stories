@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-function List(probs){
+const List= (probs)=>{
   return (
     <div>
       <h3>{probs.title}</h3>
       <ul>
         { probs.lists.map(function (item){
-          return (<Item item={item} />);
+          return (<Item key={item.objectID} item={item} />);
           }) 
         }
       </ul>
@@ -18,7 +18,7 @@ function List(probs){
 const Item = (probs) =>{
   const item = probs.item;
   return (
-    <li key={item.objectID}>
+    <li>
       <span>
         <a href={item.url} >{item.title}</a> &nbsp;&nbsp;
       </span>     <span>{item.author}</span>&nbsp;&nbsp;
@@ -29,23 +29,20 @@ const Item = (probs) =>{
 }
 
 
-function Search(){
+const Search=(probs)=>{
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleChange = (event)=> {
       // console.log('Before: ${searchTerm}');
       setSearchTerm(event.target.value);
       // console.log('After:${searchTerm}');
-  }
 
-  const handleMouseOver = (event) => {
-      console.log(event);
+      probs.onSearch(event);
   }
   return (
       <div>
-        <h1>My Hacker Stories</h1>
         <label htmlFor='search'>Search </label>
-        <input type="text" id="search" onChange={handleChange} onMouseOver={handleMouseOver}></input>
+        <input type="text" id="search" onChange={handleChange}></input>
         <p>
           search for <strong>{searchTerm}</strong>
         </p>
@@ -53,7 +50,7 @@ function Search(){
       );
   }
 
-function App(){
+const App = () => {
 
   const stories =[
     {
@@ -82,39 +79,43 @@ function App(){
     }
   ] 
 
-  const jsLibs =[
-    {
-      title: 'jQuery',
-      url:'url/abc/db',
-      author: 'Fayaz Nabi',
-      num_comments: 4,
-      points:4,
-      objectID:1
-    },
-    {
-      title: 'vuejs',
-      url:'url/abc/db',
-      author: 'Rohan Nido',
-      num_comments: 3,
-      points:2,
-      objectID:7
-    },
-    {
-      title: 'Angular',
-      url:'url/abc/db',
-      author: 'Google',
-      num_comments: 3,
-      points:2,
-      objectID:2
-    }
-  ] 
+  // const jsLibs =[
+  //   {
+  //     title: 'jQuery',
+  //     url:'url/abc/db',
+  //     author: 'Fayaz Nabi',
+  //     num_comments: 4,
+  //     points:4,
+  //     objectID:1
+  //   },
+  //   {
+  //     title: 'vuejs',
+  //     url:'url/abc/db',
+  //     author: 'Rohan Nido',
+  //     num_comments: 3,
+  //     points:2,
+  //     objectID:7
+  //   },
+  //   {
+  //     title: 'Angular',
+  //     url:'url/abc/db',
+  //     author: 'Google',
+  //     num_comments: 3,
+  //     points:2,
+  //     objectID:2
+  //   }
+  // ] 
+  const handleSearch = (event) => {
+      console.log(event.target.value); 
+  }
   
     return (
       <div>
-        <Search/>
+        <h1>My Hacker Stories</h1>
+        <Search onSearch={handleSearch}/>
         <hr/>
         <List lists={stories} title="React eco system"/>
-        <List lists={jsLibs} title="JavaScript Libraries"/>
+        {/* <List lists={jsLibs} title="JavaScript Libraries"/> */}
       </div>
     );
 }
