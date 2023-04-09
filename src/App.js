@@ -29,22 +29,16 @@ const Item = (probs) =>{
 }
 
 
-const Search=(probs)=>{
-  const [searchTerm, setSearchTerm] = React.useState('');
-
+const Search=(props)=>{
   const handleChange = (event)=> {
-      // console.log('Before: ${searchTerm}');
-      setSearchTerm(event.target.value);
-      // console.log('After:${searchTerm}');
-
-      probs.onSearch(event);
+      props.onSearch(event);
   }
   return (
       <div>
         <label htmlFor='search'>Search </label>
         <input type="text" id="search" onChange={handleChange}></input>
         <p>
-          search for <strong>{searchTerm}</strong>
+          search for <strong>{props.searchTerm}</strong>
         </p>
       </div>
       );
@@ -79,6 +73,8 @@ const App = () => {
     }
   ] 
 
+  const [searchTerm, setSearchTerm] = React.useState('');
+
   // const jsLibs =[
   //   {
   //     title: 'jQuery',
@@ -106,15 +102,20 @@ const App = () => {
   //   }
   // ] 
   const handleSearch = (event) => {
+      setSearchTerm(event.target.value);
       console.log(event.target.value); 
   }
+
+  const searchedStories = stories.filter((story) => {
+      return story.title.includes(searchTerm.toLowerCase());
+  });
   
     return (
       <div>
         <h1>My Hacker Stories</h1>
-        <Search onSearch={handleSearch}/>
+        <Search onSearch={handleSearch} searchTerm={searchTerm}/>
         <hr/>
-        <List lists={stories} title="React eco system"/>
+        <List lists={searchedStories} title="React eco system" />
         {/* <List lists={jsLibs} title="JavaScript Libraries"/> */}
       </div>
     );
