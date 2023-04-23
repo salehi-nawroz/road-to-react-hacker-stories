@@ -34,13 +34,13 @@ const Search=(props)=>{
       props.onSearch(event);
   }
   return (
-      <div>
+      <>
         <label htmlFor='search'>Search </label>
-        <input type="text" id="search" onChange={handleChange}></input>
+        <input type="text" value={props.searchTerm} id="search4" onChange={handleChange}></input>
         <p>
           search for <strong>{props.searchTerm}</strong>
         </p>
-      </div>
+      </>
       );
   }
 
@@ -73,7 +73,19 @@ const App = () => {
     }
   ] 
 
-  const [searchTerm, setSearchTerm] = React.useState('');
+
+  const useSemiPersistentState = (key, initialState) => {
+    const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
+
+    React.useEffect(() => {
+      localStorage.setItem(key, value)
+    }, [value]);
+
+    return [value, setValue];
+  }
+
+  const [searchTerm, setSearchTerm] = useSemiPersistentState('search','vue');
+
 
   // const jsLibs =[
   //   {
