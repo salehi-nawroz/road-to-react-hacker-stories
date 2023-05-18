@@ -27,6 +27,40 @@ const initialStories =[
   }
 ]  
 
+// REDUCER/REDUX
+const storiesReducer = (state, action) => {
+  switch (action.type) {
+    case 'STORIES_FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case 'STORIES_FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case 'STORIES_FETCH_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        };
+    case 'REMOVE_STORY':
+      return {
+        ...state,
+        data: state.data.filter(
+        (story) => action.payload.objectID !== story.objectID
+        ),
+      };
+    default:
+      throw new Error();
+    }
+  };
+
 
 const List = ({list, onRemoveItem}) => 
   list.map(item=>(
@@ -73,9 +107,7 @@ const Search=(props)=>{
 
 const App = () => {
 
-  
-
-
+     
   const useSemiPersistentState = (key, initialState) => {
     const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
@@ -87,14 +119,49 @@ const App = () => {
   }
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search','vue');
+  // Old way
+  //const [stories, setStories] = React.useState([]);
+  // New way
+  const [stories, dispatchStories] = React.useReducer(
+    storiesReducer,
+   { data: [], isLoading:false, isError:false}
+    );
+ 
 
-  const [stories, setStories] = React.useState(initialStories);
+  const getAsyncStories = () =>
+      new Promise((resolve) =>
+      setTimeout(
+        () => resolve({ data: { stories: initialStories } }),
+        2000
+      )
+    );
+
+  React.useEffect(() => {
+    dispatchStories({ type: 'STORIES_FETCH_INIT' });
+
+    getAsyncStories().then(result => {
+      dispatchStories({
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result.data.stories,
+        });
+    })
+     .catch(()=>
+         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
+     );
+    }, [])
+
+
 
   const handleRemoveStory = item => {
-    const newStories = stories.filter(
+    const newStories = stories.data.filter(
       story => item.objectID !== story.objectID
     );
-    setStories(newStories);
+   // setStories(newStories);
+
+    dispatchStories({
+      type: 'REMOVE_STORY',
+      payload: item,
+      });
   }
 
   
@@ -103,7 +170,7 @@ const App = () => {
       console.log(event.target.value); 
   }
 
-  const searchedStories = stories.filter((story) => {
+  const searchedStories = stories.data.filter((story) => {
       return story.title.includes(searchTerm.toLowerCase());
   });
   
@@ -120,12 +187,15 @@ const App = () => {
           </InputWithLabel>
 
         <hr/>
-        <List list={searchedStories} title="React eco system" onRemoveItem={handleRemoveStory} />
+        {stories.isError && <p>Something went wrong ...</p>}
+        {stories.isLoading ? (<p>Loading ...</p>)
+         : (<List list={searchedStories} title="React eco system" onRemoveItem={handleRemoveStory} />)}
+        
         {/* <List lists={jsLibs} title="JavaScript Libraries"/> */}
       </div>
     );
 }
-
+// Resuable input element
 const InputWithLabel = ({
   id,
   value,
@@ -146,7 +216,7 @@ const InputWithLabel = ({
     &nbsp;
     <input 
       ref={inputRef}
-       id={id} 
+      id={id} 
       type={type} 
       value={value} 
       onChange={onInputChange}
